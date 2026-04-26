@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Social Media Analysis Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0a0a0f;
+    --surface:   #111118;
+    --card:      #16161f;
+    --border:    #3a3a55;
+    --accent:    #00e5ff;
+    --accent2:   #9c6fff;
+    --green:     #00e676;
+    --red:       #ff4569;
+    --yellow:    #ffd740;
+    --text:      #f0f0ff;
+    --muted:     #a0a0c0;
+    --font-head: 'Orbitron', sans-serif;
+    --font-body: 'Rajdhani', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(90deg, #0a0a0f 0%, #12121e 100%);
+    border-bottom: 1px solid var(--accent);
+    padding: 16px 30px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 0 14px rgba(0,229,255,0.4);
+  }
+  .header-text h1 {
+    font-family: var(--font-head);
+    font-size: 16px;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
+  .header-text p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    gap: 4px;
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 12px 18px;
+    color: #a0a0c0;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .tab:hover { color: #f0f0ff; }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── CONTENT ── */
+  .content { max-width: 800px; margin: 24px auto; padding: 0 16px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── PIPELINE ── */
+  .pipeline {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;
+  }
+  .pipe-step {
+    background: var(--surface);
+    color: var(--muted);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    letter-spacing: 0.5px;
+  }
+  .pipe-step.done {
+    background: rgba(0,229,255,0.08);
+    color: var(--accent);
+    border-color: rgba(0,229,255,0.3);
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+  .card h3 {
+    font-family: var(--font-head);
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #b0b0d0;
+    background: rgba(0,229,255,0.05);
+    border-left: 2px solid var(--accent);
+    padding: 8px 12px;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+
+  /* ── INPUTS ── */
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #c8c8e8;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  textarea, input[type=text], select {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-family: var(--font-body);
+    background: #1a1a28;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: #f0f0ff;
+    outline: none;
+    transition: border 0.2s;
+  }
+  textarea:focus, input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(0,229,255,0.1);
+  }
+  textarea { resize: none; }
+  select option { background: var(--surface); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .input-group { margin-bottom: 12px; }
+
+  /* ── BUTTON ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 26px;
+    font-size: 13px;
+    font-family: var(--font-head);
+    font-weight: 700;
+    letter-spacing: 1px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    color: #000;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 0 16px rgba(0,229,255,0.3);
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 24px rgba(0,229,255,0.5);
+  }
+
+  /* ── RESULT BOX ── */
+  .result-box {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(0,229,255,0.03);
+    display: none;
+  }
+  .result-box.show { display: block; }
+  .result-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #b0b0d0;
+    margin-bottom: 8px;
+  }
+  .result-main { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .result-sub { font-size: 13px; color: #b0b0d0; margin-bottom: 14px; }
+
+  .metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+  .metric {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+  .metric-val { font-size: 20px; font-weight: 700; color: var(--accent); }
+  .metric-lbl { font-size: 12px; color: #b0b0d0; margin-top: 2px; }
+
+  /* ── PROGRESS CARD ── */
+  .progress-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .progress-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f0f0ff;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+  .prog-wrap { margin-bottom: 12px; }
+  .prog-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #c0c0e0;
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+  .prog-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s ease;
+  }
+
+  /* ── COLORS ── */
+  .positive { color: var(--green); }
+  .negative { color: var(--red); }
+  .warning  { color: var(--yellow); }
+  .neutral  { color: var(--muted); }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-block;
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .badge-red   { background: rgba(255,23,68,0.1);  color: var(--red);    border: 1px solid rgba(255,23,68,0.3); }
+  .badge-green { background: rgba(0,230,118,0.1);  color: var(--green);  border: 1px solid rgba(0,230,118,0.3); }
+  .badge-blue  { background: rgba(124,77,255,0.1); color: var(--accent2);border: 1px solid rgba(124,77,255,0.3); }
+
+  /* ── SEGMENT INFO ── */
+  .seg-info { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+  .seg-row  { display: flex; align-items: center; gap: 12px; }
+  .seg-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">📊</div>
+  <div class="header-text">
+    <h1>SOCIAL MEDIA ANALYSIS</h1>
+    <p>Invertis University, CSED &nbsp;|&nbsp; B.Tech (CSE) 2024 &nbsp;|&nbsp; Mentor: Mr. Divyank Chauhan</p>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(0)">💬 Sentiment Analysis</div>
+  <div class="tab" onclick="switchTab(1)">📈 Trend Prediction</div>
+  <div class="tab" onclick="switchTab(2)">🕵 Fake Account</div>
+  <div class="tab" onclick="switchTab(3)">👥 User Segmentation</div>
+</div>
+
+<div class="content">
+
+  <!-- ══ PANEL 0: SENTIMENT ANALYSIS ══ -->
+  <div class="panel active" id="panel-0">
+     
+    <div class="card">
+      <h3>SENTIMENT ANALYSIS</h3>
+      <div class="subtitle">
+        Algorithm: Logistic Regression + K-Means Clustering &nbsp;|&nbsp;
+        Dataset: Sentiment140 (1.6M Tweets) &nbsp;|&nbsp; Accuracy: 76.65%
+      </div>
+      <div class="input-group">
+        <label>Enter a tweet or social media post</label>
+        <textarea id="sent-input" rows="3" placeholder="e.g. I love this beautiful day!"></textarea>
+      </div>
+      <button class="btn" onclick="analyzeSentiment()">▶ ANALYZE SENTIMENT</button>
+      <div class="result-box" id="sent-result">
+        <div class="result-title">🤖 Model Prediction — Logistic Regression</div>
+        <div class="result-main" id="sent-main"></div>
+        <div class="result-sub" id="sent-sub"></div>
+        <div class="metrics" id="sent-metrics"></div>
+      </div>
+    </div>
+    <div class="progress-card">
+      <h3>📊 Model Performance</h3>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>Accuracy</span><span>76.65%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:76.65%;background:var(--green)"></div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>Precision</span><span>77%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:77%;background:var(--accent)"></div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>Recall</span><span>77%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:77%;background:var(--accent2)"></div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>F1-Score</span><span>77%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:77%;background:var(--yellow)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 1: TREND PREDICTION ══ -->
+  <div class="panel" id="panel-1">
+    
+    <div class="card">
+      <h3>TREND PREDICTION</h3>
+      <div class="subtitle">
+        Algorithm: Linear Regression + K-Means Clustering &nbsp;|&nbsp;
+        Dataset: Twitter Trending Hashtags &nbsp;|&nbsp; R² Score: 0.9491
+      </div>
+      <div class="two-col">
+        <div class="input-group">
+          <label>Enter hashtag</label>
+          <input type="text" id="trend-tag" placeholder="#AI, #Cricket ...">
+        </div>
+        <div class="input-group">
+          <label>Select year</label>
+          <select id="trend-year">
+            <option>2025</option><option>2024</option><option>2023</option>
+            <option>2022</option><option>2021</option>
+          </select>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Select month</label>
+        <select id="trend-month">
+          <option value="1">January</option><option value="2">February</option>
+          <option value="3">March</option><option value="4">April</option>
+          <option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option>
+          <option value="9">September</option><option value="10">October</option>
+          <option value="11">November</option><option value="12">December</option>
+        </select>
+      </div>
+      <button class="btn" onclick="analyzeTrend()">▶ PREDICT TREND</button>
+      <div class="result-box" id="trend-result">
+        <div class="result-title">🤖 Model Prediction — Linear Regression</div>
+        <div class="result-main" id="trend-main"></div>
+        <div class="result-sub" id="trend-sub"></div>
+        <div class="metrics" id="trend-metrics"></div>
+      </div>
+    </div>
+    <div class="progress-card">
+      <h3>📊 Model Performance</h3>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>R² Score</span><span>94.91%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:94.91%;background:var(--green)"></div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>MSE (lower is better)</span><span>12%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:12%;background:var(--red)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 2: FAKE ACCOUNT DETECTION ══ -->
+  <div class="panel" id="panel-2">
+    
+    <div class="card">
+      <h3>FAKE ACCOUNT DETECTION</h3>
+      <div class="subtitle">
+        Algorithm: Logistic Regression + K-Means Clustering &nbsp;|&nbsp;
+        Dataset: Instagram Fake/Spammer/Genuine Accounts
+      </div>
+      <div class="two-col">
+        <div class="input-group">
+          <label>Profile picture present?</label>
+          <select id="fake-pic"><option value="1">Yes</option><option value="0">No</option></select>
+        </div>
+        <div class="input-group">
+          <label>Username has numbers?</label>
+          <select id="fake-nums"><option value="0">No</option><option value="1">Yes</option></select>
+        </div>
+        <div class="input-group">
+          <label>Followers count</label>
+          <input type="text" id="fake-followers" placeholder="e.g. 250">
+        </div>
+        <div class="input-group">
+          <label>Following count</label>
+          <input type="text" id="fake-following" placeholder="e.g. 4500">
+        </div>
+        <div class="input-group">
+          <label>Total posts</label>
+          <input type="text" id="fake-posts" placeholder="e.g. 12">
+        </div>
+        <div class="input-group">
+          <label>Bio present?</label>
+          <select id="fake-bio"><option value="1">Yes</option><option value="0">No</option></select>
+        </div>
+      </div>
+      <button class="btn" onclick="analyzeFake()">▶ CHECK ACCOUNT</button>
+      <div class="result-box" id="fake-result">
+        <div class="result-title">🤖 Model Prediction — Logistic Regression</div>
+        <div class="result-main" id="fake-main"></div>
+        <div class="result-sub" id="fake-sub"></div>
+        <div class="metrics" id="fake-metrics"></div>
+      </div>
+    </div>
+    <div class="progress-card">
+      <h3>📊 Model Performance</h3>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>Accuracy</span><span>91%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:91%;background:var(--green)"></div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>Precision</span><span>90%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:90%;background:var(--accent)"></div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>Recall</span><span>92%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:92%;background:var(--accent2)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 3: USER SEGMENTATION ══ -->
+  <div class="panel" id="panel-3">
+    
+    <div class="card">
+      <h3>USER SEGMENTATION</h3>
+      <div class="subtitle">
+        Algorithm: K-Means Clustering + Logistic Regression &nbsp;|&nbsp;
+        Dataset: Social Media Usage and User Behavior
+      </div>
+      <div class="two-col">
+        <div class="input-group">
+          <label>Daily usage (minutes)</label>
+          <input type="text" id="seg-time" placeholder="e.g. 120">
+        </div>
+        <div class="input-group">
+          <label>Posts per week</label>
+          <input type="text" id="seg-posts" placeholder="e.g. 5">
+        </div>
+        <div class="input-group">
+          <label>Platforms used</label>
+          <input type="text" id="seg-platforms" placeholder="e.g. 3">
+        </div>
+        <div class="input-group">
+          <label>Likes per day</label>
+          <input type="text" id="seg-likes" placeholder="e.g. 30">
+        </div>
+        <div class="input-group">
+          <label>Comments per day</label>
+          <input type="text" id="seg-comments" placeholder="e.g. 10">
+        </div>
+        <div class="input-group">
+          <label>Shares per week</label>
+          <input type="text" id="seg-shares" placeholder="e.g. 4">
+        </div>
+      </div>
+      <button class="btn" onclick="analyzeSegment()">▶ SEGMENT USER</button>
+      <div class="result-box" id="seg-result">
+        <div class="result-title">🤖 Model Prediction — K-Means Cluster</div>
+        <div class="result-main" id="seg-main"></div>
+        <div class="result-sub" id="seg-sub"></div>
+        <div class="metrics" id="seg-metrics"></div>
+      </div>
+    </div>
+    <div class="progress-card">
+      <h3>👥 Segment Definitions (K=3 Clusters)</h3>
+      <div class="seg-info">
+        <div class="seg-row">
+          <div class="seg-dot" style="background:var(--red)"></div>
+          <span class="badge badge-red">Cluster 0 — Heavy User</span>
+          <span style="font-size:13px;color:#c0c0e0;margin-left:8px">High usage, many posts, very active</span>
+        </div>
+        <div class="seg-row">
+          <div class="seg-dot" style="background:var(--accent2)"></div>
+          <span class="badge badge-blue">Cluster 1 — Normal User</span>
+          <span style="font-size:13px;color:#c0c0e0;margin-left:8px">Moderate usage, occasional posting</span>
+        </div>
+        <div class="seg-row">
+          <div class="seg-dot" style="background:var(--green)"></div>
+          <span class="badge badge-green">Cluster 2 — Light User</span>
+          <span style="font-size:13px;color:#c0c0e0;margin-left:8px">Low usage, passive consumer</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function switchTab(i) {
+    document.querySelectorAll('.tab').forEach((t, idx) => t.classList.toggle('active', idx === i));
+    document.querySelectorAll('.panel').forEach((p, idx) => p.classList.toggle('active', idx === i));
+  }
+
+  const API = "http://127.0.0.1:5000";
+
+  async function analyzeSentiment() {
+    const txt = document.getElementById('sent-input').value.trim();
+    if (!txt) { alert('Please enter a tweet!'); return; }
+    const btn = event.target; btn.textContent = 'Analyzing...';
+    try {
+      const res = await fetch(API + '/predict_sentiment', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: txt })
+      });
+      const d = await res.json();
+      if (d.error) { alert('Error: ' + d.error); return; }
+      document.getElementById('sent-result').classList.add('show');
+      document.getElementById('sent-main').innerHTML = d.prediction === 1
+        ? '<span class="positive">😊 Positive Sentiment Detected</span>'
+        : '<span class="negative">😞 Negative Sentiment Detected</span>';
+      document.getElementById('sent-sub').textContent = 'Logistic Regression — Accuracy: 76.65% — Confidence: ' + d.confidence + '%';
+      document.getElementById('sent-metrics').innerHTML = `
+        <div class="metric"><div class="metric-val">${d.confidence}%</div><div class="metric-lbl">Confidence</div></div>
+        <div class="metric"><div class="metric-val">${d.word_count}</div><div class="metric-lbl">Word Count</div></div>
+        <div class="metric"><div class="metric-val">${d.label}</div><div class="metric-lbl">Prediction</div></div>`;
+    } catch (e) { alert('Flask server not running! Start app.py first.'); }
+    btn.textContent = '▶ ANALYZE SENTIMENT';
+  }
+
+  async function analyzeTrend() {
+    const tag = document.getElementById('trend-tag').value.trim();
+    if (!tag) { alert('Please enter a hashtag!'); return; }
+    const btn = event.target; btn.textContent = 'Predicting...';
+    try {
+      const res = await fetch(API + '/predict_trend', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          year: parseInt(document.getElementById('trend-year').value),
+          month: parseInt(document.getElementById('trend-month').value),
+          rank: 5
+        })
+      });
+      const d = await res.json();
+      if (d.error) { alert('Error: ' + d.error); return; }
+      document.getElementById('trend-result').classList.add('show');
+      document.getElementById('trend-main').innerHTML = d.is_trending
+        ? `<span class="positive">📈 ${tag} — Trending (${d.trend_level} Volume)</span>`
+        : `<span class="neutral">📉 ${tag} — Low Trend Activity</span>`;
+      document.getElementById('trend-sub').textContent = 'Linear Regression — R² Score: ' + d.r2_score;
+      document.getElementById('trend-metrics').innerHTML = `
+        <div class="metric"><div class="metric-val">${d.predicted_tweets_display}</div><div class="metric-lbl">Predicted Tweets</div></div>
+        <div class="metric"><div class="metric-val">${d.r2_score}</div><div class="metric-lbl">R² Score</div></div>
+        <div class="metric"><div class="metric-val">${d.trend_level}</div><div class="metric-lbl">Trend Level</div></div>`;
+    } catch (e) { alert('Flask server not running! Start app.py first.'); }
+    btn.textContent = '▶ PREDICT TREND';
+  }
+
+  async function analyzeFake() {
+    const btn = event.target; btn.textContent = 'Checking...';
+    try {
+      const res = await fetch(API + '/predict_fake', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profile_pic: parseInt(document.getElementById('fake-pic').value),
+          nums_in_username: parseInt(document.getElementById('fake-nums').value),
+          followers: parseInt(document.getElementById('fake-followers').value) || 0,
+          following: parseInt(document.getElementById('fake-following').value) || 0,
+          posts: parseInt(document.getElementById('fake-posts').value) || 0,
+          bio: parseInt(document.getElementById('fake-bio').value)
+        })
+      });
+      const d = await res.json();
+      if (d.error) { alert('Error: ' + d.error); return; }
+      document.getElementById('fake-result').classList.add('show');
+      document.getElementById('fake-main').innerHTML = d.prediction === 1
+        ? '<span class="negative">🚨 Fake / Spam Account Detected</span>'
+        : '<span class="positive">✅ Genuine Account</span>';
+      document.getElementById('fake-sub').textContent = 'Logistic Regression — Confidence: ' + d.confidence + '% — Follow Ratio: ' + d.follow_ratio;
+      document.getElementById('fake-metrics').innerHTML = `
+        <div class="metric"><div class="metric-val">${d.confidence}%</div><div class="metric-lbl">Confidence</div></div>
+        <div class="metric"><div class="metric-val">${d.follow_ratio}</div><div class="metric-lbl">Follow Ratio</div></div>
+        <div class="metric"><div class="metric-val">${d.prediction === 1 ? 'Fake' : 'Real'}</div><div class="metric-lbl">Result</div></div>`;
+    } catch (e) { alert('Flask server not running! Start app.py first.'); }
+    btn.textContent = '▶ CHECK ACCOUNT';
+  }
+
+  async function analyzeSegment() {
+    const btn = event.target; btn.textContent = 'Segmenting...';
+    try {
+      const res = await fetch(API + '/predict_segment', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          daily_usage: parseFloat(document.getElementById('seg-time').value) || 0,
+          posts_per_week: parseFloat(document.getElementById('seg-posts').value) || 0,
+          platforms: parseFloat(document.getElementById('seg-platforms').value) || 0,
+          likes_per_day: parseFloat(document.getElementById('seg-likes').value) || 0,
+          comments_per_day: parseFloat(document.getElementById('seg-comments').value) || 0,
+          shares_per_week: parseFloat(document.getElementById('seg-shares').value) || 0
+        })
+      });
+      const d = await res.json();
+      if (d.error) { alert('Error: ' + d.error); return; }
+      const badges = ['badge-red', 'badge-blue', 'badge-green'];
+      document.getElementById('seg-result').classList.add('show');
+      document.getElementById('seg-main').innerHTML =
+        `<span class="badge ${badges[d.cluster] || 'badge-blue'}" style="font-size:17px;padding:8px 20px">👤 ${d.label} — Cluster ${d.cluster}</span>`;
+      document.getElementById('seg-sub').textContent = d.description + ' — K-Means Cluster ' + d.cluster;
+      document.getElementById('seg-metrics').innerHTML = `
+        <div class="metric"><div class="metric-val">${d.daily_usage}m</div><div class="metric-lbl">Daily Usage</div></div>
+        <div class="metric"><div class="metric-val">${d.posts_per_week}/wk</div><div class="metric-lbl">Posts</div></div>
+        <div class="metric"><div class="metric-val">${d.cluster}</div><div class="metric-lbl">Cluster ID</div></div>`;
+    } catch (e) { alert('Flask server not running! Start app.py first.'); }
+    btn.textContent = '▶ SEGMENT USER';
+  }
+</script>
+</body>
+</html>
